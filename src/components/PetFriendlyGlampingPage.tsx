@@ -90,6 +90,18 @@ function PetFriendlyHeroSection() {
   const basePrice = 24900
   const finalPrice = Math.round(basePrice * (currentDuration?.multiplier || 1))
 
+  // ИСПРАВЛЕНО: Извлекаем количество ночей из selectedDuration
+  const nightsCount = selectedDuration === '1-night' ? 1 : selectedDuration === '2-nights' ? 2 : 3
+
+  // Фотографии глэмпингов с питомцами (перенесено выше для использования в petFriendlyCertificate)
+  const glampingImages = [
+    'https://images.unsplash.com/photo-1703257258601-ef632cc3912b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxnbGFtcGluZyUyMHRlbnQlMjBwZXRzJTIwZG9nfGVufDF8fHx8MTc2MDI4NDg4OXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    'https://images.unsplash.com/photo-1629271910288-34df3dbe67ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkb2clMjBjYW1waW5nJTIwbmF0dXJlfGVufDF8fHx8MTc2MDI4NDg5MHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    'https://images.unsplash.com/photo-1755159752699-65d16b98b6ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZXQlMjBmcmllbmRseSUyMGNhYmlufGVufDF8fHx8MTc2MDI4NDg5MHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    'https://images.unsplash.com/photo-1613211698325-715b9730af34?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkb2clMjBmb3Jlc3QlMjB0ZW50fGVufDF8fHx8MTc2MDI4NDg5MXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    'https://images.unsplash.com/photo-1722350643282-768fbff1281c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxnbGFtcGluZyUyMGRvbWUlMjBwZXRzfGVufDF8fHx8MTc2MDI4NDg5MXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral'
+  ]
+
   // Функция для скролла к блоку с отзывами
   const scrollToReviews = () => {
     const reviewsSection = document.getElementById('satisfied-customers-section')
@@ -98,21 +110,15 @@ function PetFriendlyHeroSection() {
     }
   }
 
+  // ИСПРАВЛЕНО: Данные сертификата с актуальными nights и image
   const petFriendlyCertificate = {
     name: 'Глэмпинг: отдых в глэмпинге с питомцем',
     description: 'Отдых с питомцами',
     price: finalPrice,
-    type: 'pet-friendly'
+    type: 'pet-friendly',
+    nights: nightsCount,  // ДОБАВЛЕНО: количество выбранных ночей
+    image: glampingImages[currentImageIndex]  // ДОБАВЛЕНО: текущее изображение из карусели
   }
-
-  // Фотографии глэмпингов с питомцами
-  const glampingImages = [
-    'https://images.unsplash.com/photo-1703257258601-ef632cc3912b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxnbGFtcGluZyUyMHRlbnQlMjBwZXRzJTIwZG9nfGVufDF8fHx8MTc2MDI4NDg4OXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-    'https://images.unsplash.com/photo-1629271910288-34df3dbe67ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkb2clMjBjYW1waW5nJTIwbmF0dXJlfGVufDF8fHx8MTc2MDI4NDg5MHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-    'https://images.unsplash.com/photo-1755159752699-65d16b98b6ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZXQlMjBmcmllbmRseSUyMGNhYmlufGVufDF8fHx8MTc2MDI4NDg5MHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-    'https://images.unsplash.com/photo-1613211698325-715b9730af34?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkb2clMjBmb3Jlc3QlMjB0ZW50fGVufDF8fHx8MTc2MDI4NDg5MXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-    'https://images.unsplash.com/photo-1722350643282-768fbff1281c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxnbGFtcGluZyUyMGRvbWUlMjBwZXRzfGVufDF8fHx8MTc2MDI4NDg5MXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral'
-  ]
 
   const handlePrevImage = () => {
     setCurrentImageIndex((prev) => (prev - 1 + glampingImages.length) % glampingImages.length)

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useCallback } from 'react'
 import { Button } from './ui/button'
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from './ui/dialog'
 import { X, Plus, Minus, ShoppingBag, Moon } from 'lucide-react'
@@ -13,6 +13,18 @@ interface CartModalProps {
 
 export function CartModal({ isOpen, onClose }: CartModalProps) {
   const { items, updateQuantity, updateNights, removeFromCart, getTotalPrice } = useCart()
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+
+  // Открытие CheckoutModal
+  const handleOpenCheckout = useCallback(() => {
+    setIsCheckoutOpen(true)
+  }, [])
+
+  // Закрытие CheckoutModal - НЕ закрываем CartModal, оставляем его открытым
+  const handleCloseCheckout = useCallback(() => {
+    console.log('[CartModal] CheckoutModal закрыт, оставляем CartModal открытым')
+    setIsCheckoutOpen(false)
+  }, [])
 
   const formatNightsText = (nights: number) => {
     if (nights === 1) return '1 ночь'
@@ -180,13 +192,16 @@ export function CartModal({ isOpen, onClose }: CartModalProps) {
             </span>
           </div>
           
+          <Button
+            className="w-full bg-emerald-600 hover:bg-emerald-700 h-12 text-base"
+            onClick={handleOpenCheckout}
+          >
+            Оформить заказ
+          </Button>
+
           <CheckoutModal
-            trigger={
-              <Button className="w-full bg-emerald-600 hover:bg-emerald-700 h-12 text-base">
-                Оформить заказ
-              </Button>
-            }
-            onClose={onClose}
+            isOpen={isCheckoutOpen}
+            onClose={handleCloseCheckout}
           />          
           
           <Button 

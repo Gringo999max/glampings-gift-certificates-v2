@@ -40,56 +40,9 @@ const CartContext = createContext<CartContextType | undefined>(undefined)
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
 
-  // Добавляем тестовые товары при первой загрузке для тестирования
-  useEffect(() => {
-    const testItems: CartItem[] = [
-      {
-        id: 'pet-friendly-glamping-2nights',
-        title: 'Глэмпинг: отдых в глэмпинге с питомцем',
-        price: 24900,
-        nights: 2,
-        durationType: 'ночь',
-        images: [
-          testGlampingImages[0],
-          testGlampingImages[1],
-          testGlampingImages[2],
-          testGlampingImages[3]
-        ],
-        category: '100 вариантов',
-        quantity: 1
-      },
-      {
-        id: 'pet-friendly-glamping-1night',
-        title: 'Глэмпинг: отдых в глэмпинге с питомцем', 
-        price: 24900,
-        nights: 1,
-        durationType: 'ночь',
-        images: [
-          testGlampingImages[2],
-          testGlampingImages[3],
-          testGlampingImages[0]
-        ],
-        category: '100 вариантов',
-        quantity: 1
-      },
-      {
-        id: 'family-glamping', 
-        title: 'Глэмпинг: семейный отдых',
-        price: 19900,
-        nights: 3,
-        durationType: 'ночь',
-        images: [
-          testGlampingImages[3],
-          testGlampingImages[1],
-          testGlampingImages[0],
-          testGlampingImages[2]
-        ],
-        category: '200 вариантов',
-        quantity: 2
-      }
-    ]
-    setItems(testItems)
-  }, [])
+  // ТЕСТОВЫЕ ДАННЫЕ УДАЛЕНЫ для production
+  // Корзина теперь пустая при запуске
+  // Раньше здесь было: useEffect(() => { setItems(testItems) }, [])
 
   const addToCart = (newItem: Omit<CartItem, 'quantity'>) => {
     setItems(prevItems => {

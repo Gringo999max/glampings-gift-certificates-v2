@@ -49,6 +49,8 @@ interface CheckoutModalProps {
     description: string
     price: number
     type: string
+    nights?: number  // ДОБАВЛЕНО: количество ночей
+    image?: string   // ДОБАВЛЕНО: изображение сертификата
   }
   onClose?: () => void
   // Контролируемый режим (для FloatingCartButton)
@@ -399,11 +401,20 @@ export function CheckoutModal({ trigger, selectedCertificate, onClose, isOpen }:
   
   // Состояние для fallback случая (пустая корзина)
   const [fallbackQuantity, setFallbackQuantity] = useState(1)
-  const [fallbackNights, setFallbackNights] = useState(2)
-  
+  // ИСПРАВЛЕНО: Используем переданное значение nights из selectedCertificate или 1 по умолчанию
+  const [fallbackNights, setFallbackNights] = useState(selectedCertificate?.nights || 1)
+
+  // Синхронизация fallbackNights с selectedCertificate.nights при изменении
+  useEffect(() => {
+    if (selectedCertificate?.nights) {
+      console.log('[CheckoutModal] Синхронизация nights из selectedCertificate:', selectedCertificate.nights)
+      setFallbackNights(selectedCertificate.nights)
+    }
+  }, [selectedCertificate?.nights])
+
   // Состояние для удаления товаров с каунтдауном
   const [deletingItems, setDeletingItems] = useState<{[key: string]: {item: any, countdown: number}}>({})
-  
+
   // Состояние для hover эффекта сертификатов
   const [hoveredCertificate, setHoveredCertificate] = useState<string | null>(null)
   

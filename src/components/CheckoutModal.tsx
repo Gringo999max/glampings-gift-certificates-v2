@@ -32,6 +32,7 @@ import giftBoxLavender from 'figma:asset/e1779cb0f5e1a750e3a441574dc7071d3a0585f
 import giftBoxVan from 'figma:asset/272b4b8040c9a5ae11a753a5cfdc6dd695e15d4b.png'
 
 import { ImageWithFallback } from './figma/ImageWithFallback'
+import { convertToCheckoutPayload, submitCheckout } from '../utils/checkoutService'
 
 // Тестовые изображения глэмпингов для галереи
 const testGlampingImages = [
@@ -411,7 +412,11 @@ export function CheckoutModal({ trigger, selectedCertificate, onClose, isOpen }:
   
   // Состояние для отслеживания, был ли пользовательский выбор дизайна электронного сертификата
   const [electronicDesignSelected, setElectronicDesignSelected] = useState(false)
-  
+
+  // Состояния для отправки формы на сервер
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+
   // Ref для отслеживания предыдущего значения deliveryMethod (чтобы не делать автоскролл при изменении количества)
   const prevDeliveryMethodRef = useRef<string>(deliveryMethod)
   
@@ -1006,17 +1011,57 @@ export function CheckoutModal({ trigger, selectedCertificate, onClose, isOpen }:
     // Форма валидна - продолжаем с оплатой
     console.log('Форма прошла валидацию, отправляем данные:', formData)
     console.log('=== SUBMIT УСПЕШЕН ===')
-    
-    // Очищаем localStorage после успешной отправки
+
+    // Отправляем данные на сервер
+    handleCheckoutSubmit()
+  }, [formData, validateForm, items, deliveryMethod, selectedEnvelope, selectedPackaging, deliveryLocation, moscowDeliveryMethod, selectedPickupPoint, deliveryAddress])
+
+  // Async функция для отправки заказа на сервер
+  const handleCheckoutSubmit = useCallback(async () => {
+    setIsSubmitting(true)
+    setSubmitError(null)
+
     try {
-      localStorage.removeItem('checkoutFormData')
-      console.log('localStorage очищен после успешной отправки')
+      // Конвертируем данные формы в payload для OpenCart
+      const payload = convertToCheckoutPayload(items, formData, {
+        deliveryMethod,
+        selectedEnvelope,
+        selectedPackaging,
+        deliveryLocation,
+        moscowDeliveryMethod,
+        selectedPickupPoint,
+        deliveryAddressStreet: deliveryAddress.street,
+        deliveryAddressApartment: deliveryAddress.apartment,
+        deliveryAddressEntrance: deliveryAddress.additional?.split('Подъезд: ')[1]?.split(',')[0],
+        deliveryAddressFloor: deliveryAddress.additional?.split('Этаж: ')[1]?.split(',')[0],
+        deliveryAddressIntercom: deliveryAddress.additional?.split('Домофон: ')[1],
+        deliveryComment: formData.comment
+      })
+
+      // Отправляем на сервер
+      await submitCheckout(payload)
+
+      // Очищаем localStorage после успешной отправки
+      try {
+        localStorage.removeItem('checkoutFormData')
+        console.log('localStorage очищен после успешной отправки')
+      } catch (error) {
+        console.error('Ошибка при очистке localStorage:', error)
+      }
+
+      // Функция submitCheckout сама обработает редирект на Tinkoff
+      // Если мы дошли до этой точки без ошибки, значит все успешно
+
     } catch (error) {
-      console.error('Ошибка при очистке localStorage:', error)
+      console.error('Ошибка при оформлении заказа:', error)
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : 'Произошла ошибка при оформлении заказа. Пожалуйста, попробуйте еще раз.'
+      )
+      setIsSubmitting(false)
     }
-    
-    // Здесь будет логика отправки на сервер
-  }, [formData, validateForm])
+  }, [items, formData, deliveryMethod, selectedEnvelope, selectedPackaging, deliveryLocation, moscowDeliveryMethod, selectedPickupPoint, deliveryAddress])
 
   useEffect(() => {
     // Reset fallback values when items are added to the cart

@@ -45,19 +45,34 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Раньше здесь было: useEffect(() => { setItems(testItems) }, [])
 
   const addToCart = (newItem: Omit<CartItem, 'quantity'>) => {
+    console.log('[CartContext] addToCart called with:', {
+      id: newItem.id,
+      title: newItem.title,
+      nights: newItem.nights,
+      price: newItem.price
+    })
+
     setItems(prevItems => {
-      const existingItem = prevItems.find(item => 
+      console.log('[CartContext] Current items before add:', prevItems.length, prevItems.map(i => ({ id: i.id, nights: i.nights, qty: i.quantity })))
+
+      const existingItem = prevItems.find(item =>
         item.id === newItem.id && item.nights === newItem.nights
       )
-      
+
       if (existingItem) {
-        return prevItems.map(item =>
+        console.log('[CartContext] Found existing item, incrementing quantity')
+        const updated = prevItems.map(item =>
           item.id === existingItem.id && item.nights === existingItem.nights
             ? { ...item, quantity: item.quantity + 1 }
             : item
         )
+        console.log('[CartContext] After increment:', updated.length, updated.map(i => ({ id: i.id, nights: i.nights, qty: i.quantity })))
+        return updated
       } else {
-        return [...prevItems, { ...newItem, quantity: 1 }]
+        console.log('[CartContext] Adding new item to cart')
+        const updated = [...prevItems, { ...newItem, quantity: 1 }]
+        console.log('[CartContext] After add:', updated.length, updated.map(i => ({ id: i.id, nights: i.nights, qty: i.quantity })))
+        return updated
       }
     })
   }

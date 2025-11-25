@@ -606,21 +606,15 @@ export function FooterVariants({
                       else if (link === 'Подарочный сертификат') linkPath = '/'
                       else if (link === 'Контакты') linkPath = '/contacts'
 
-                      // Если есть конкретный путь, используем Link, иначе обычный <a>
-                      const LinkComponent = linkPath !== "#" ? Link : "a"
-                      const linkProps = linkPath !== "#"
-                        ? { to: linkPath }
-                        : { href: "#" }
-
                       return (
                         <li key={index}>
-                          <LinkComponent
-                            {...linkProps}
+                          <a
+                            href={linkPath}
                             className="text-sm text-gray-600 hover:text-emerald-600 transition-colors flex items-center gap-2 group"
                           >
                             <span className="w-0 group-hover:w-3 h-0.5 bg-emerald-500 transition-all"></span>
                             {link}
-                          </LinkComponent>
+                          </a>
                         </li>
                       )
                     })}

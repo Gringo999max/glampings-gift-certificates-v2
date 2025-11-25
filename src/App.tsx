@@ -1,11 +1,10 @@
 import React, { Suspense } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "./components/ui/sonner";
 import { CartProvider } from "./components/CartContext";
 import { FloatingCartButton } from "./components/FloatingCartButton";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
-// Import only essential home page components synchronously
+// Import home page components
 import Header from "./components/Header";
 import HeroSection from "./components/HeroSection";
 import ExtendedGlampingSection from "./components/ExtendedGlampingSection";
@@ -18,7 +17,7 @@ import RegionsSection from "./components/RegionsSection";
 import PromoSection from "./components/PromoSection";
 import Footer from "./components/Footer";
 
-// Lazy load page components to improve initial load time
+// Lazy load page components for development routing
 const DeliveryPaymentPage = React.lazy(
   () => import("./components/DeliveryPaymentPage"),
 );
@@ -41,14 +40,12 @@ const HowItWorksPage = React.lazy(
   () => import("./components/HowItWorksPage"),
 );
 
-// Enhanced loading component with better UX
+// Loading spinner for lazy loaded pages
 const LoadingSpinner = () => (
   <div className="min-h-screen flex items-center justify-center bg-white">
     <div className="flex flex-col items-center gap-4">
       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
-      <p className="text-sm text-gray-600">
-        Загружаем страницу...
-      </p>
+      <p className="text-sm text-gray-600">Загружаем страницу...</p>
     </div>
   </div>
 );
@@ -73,7 +70,7 @@ const ErrorFallback = ({ error }: { error: Error }) => (
   </div>
 );
 
-// Home Page Component
+// Home Page Component - Main React SPA Page
 function HomePage() {
   return (
     <div className="min-h-screen bg-white">
@@ -92,97 +89,100 @@ function HomePage() {
   );
 }
 
+// Development-only routing wrapper
+function DevRouter({ children }: { children: React.ReactNode }) {
+  // Only use React Router in development mode
+  if (import.meta.env.DEV) {
+    const { BrowserRouter, Routes, Route, Navigate } = require('react-router-dom');
+
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={children} />
+
+          <Route
+            path="/delivery"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <DeliveryPaymentPage />
+              </Suspense>
+            }
+          />
+
+          <Route
+            path="/reviews"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <ReviewsPage />
+              </Suspense>
+            }
+          />
+
+          <Route
+            path="/how-it-works"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <HowItWorksPage />
+              </Suspense>
+            }
+          />
+
+          <Route
+            path="/corporate"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <CorporateB2BPage />
+              </Suspense>
+            }
+          />
+
+          <Route
+            path="/about"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <AboutPage />
+              </Suspense>
+            }
+          />
+
+          <Route
+            path="/activate"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <CertificateActivationPage />
+              </Suspense>
+            }
+          />
+
+          <Route
+            path="/certificates/pet-friendly"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <PetFriendlyGlampingPage />
+              </Suspense>
+            }
+          />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    );
+  }
+
+  // In production (OpenCart), just render children without routing
+  return <>{children}</>;
+}
+
 export default function App() {
   return (
     <ErrorBoundary fallback={ErrorFallback}>
-      <BrowserRouter>
-        <CartProvider>
-          <ErrorBoundary>
-            <Routes>
-              {/* Main Pages */}
-              <Route path="/" element={<HomePage />} />
-
-              <Route
-                path="/delivery"
-                element={
-                  <Suspense fallback={<LoadingSpinner />}>
-                    <DeliveryPaymentPage />
-                  </Suspense>
-                }
-              />
-
-              <Route
-                path="/reviews"
-                element={
-                  <Suspense fallback={<LoadingSpinner />}>
-                    <ReviewsPage />
-                  </Suspense>
-                }
-              />
-
-              <Route
-                path="/how-it-works"
-                element={
-                  <Suspense fallback={<LoadingSpinner />}>
-                    <HowItWorksPage />
-                  </Suspense>
-                }
-              />
-
-              <Route
-                path="/corporate"
-                element={
-                  <Suspense fallback={<LoadingSpinner />}>
-                    <CorporateB2BPage />
-                  </Suspense>
-                }
-              />
-
-              <Route
-                path="/about"
-                element={
-                  <Suspense fallback={<LoadingSpinner />}>
-                    <AboutPage />
-                  </Suspense>
-                }
-              />
-
-              <Route
-                path="/activate"
-                element={
-                  <Suspense fallback={<LoadingSpinner />}>
-                    <CertificateActivationPage />
-                  </Suspense>
-                }
-              />
-
-              {/* Certificate Types */}
-              <Route
-                path="/certificates/pet-friendly"
-                element={
-                  <Suspense fallback={<LoadingSpinner />}>
-                    <PetFriendlyGlampingPage />
-                  </Suspense>
-                }
-              />
-
-              {/* TODO: Add other certificate types as needed:
-                  /certificates/romantic
-                  /certificates/family
-                  /certificates/extreme
-                  /certificates/relax
-                  /certificates/nominal
-              */}
-
-              {/* 404 - Redirect to home */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </ErrorBoundary>
-
-          <FloatingCartButton />
-          <Toaster />
-        </CartProvider>
-      </BrowserRouter>
+      <CartProvider>
+        <DevRouter>
+          <HomePage />
+        </DevRouter>
+        <FloatingCartButton />
+        <Toaster />
+      </CartProvider>
     </ErrorBoundary>
   );
 }

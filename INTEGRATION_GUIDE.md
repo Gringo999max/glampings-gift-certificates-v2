@@ -467,9 +467,163 @@ Content-Type: application/json
 
 ---
 
-## 7. Тестирование
+## 7. React Router и структура URL
 
-### 7.1 Локальное тестирование
+### 7.1 Обзор
+
+Приложение использует React Router v6 для client-side навигации. Это позволяет:
+- Навигация без перезагрузки страницы
+- Прямой доступ к любой странице по URL
+- Browser history support (кнопки Назад/Вперед)
+- SEO-friendly URLs
+
+### 7.2 Структура маршрутов
+
+#### Главные страницы
+```
+/ → Главная страница (с секциями сертификатов)
+/delivery → Доставка и оплата
+/reviews → Отзывы клиентов
+/how-it-works → Как это работает
+/corporate → Корпоративные подарки (B2B)
+/about → О нас
+/contacts → Контакты
+/activate → Активация сертификата
+```
+
+#### Страницы типов сертификатов
+```
+/certificates/pet-friendly → Отдых с питомцами
+/certificates/romantic → Романтические сертификаты (TODO)
+/certificates/family → Семейный отдых (TODO)
+/certificates/extreme → Экстремальный отдых (TODO)
+/certificates/relax → Релакс и SPA (TODO)
+/certificates/nominal → Номинальные сертификаты (TODO)
+```
+
+#### 404 обработка
+```
+/* → Редирект на главную страницу (/)
+```
+
+### 7.3 Конфигурация .htaccess для SPA
+
+Для правильной работы React Router в production необходим файл `.htaccess`:
+
+**Путь:** `public/.htaccess`
+
+```apache
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-l
+  RewriteRule . /index.html [L]
+</IfModule>
+```
+
+**Важно:** Этот файл должен быть скопирован в корень папки с React приложением в OpenCart:
+```bash
+cp public/.htaccess /path/to/opencart/catalog/view/theme/default/dist/.htaccess
+```
+
+### 7.4 Lazy Loading страниц
+
+Все страницы кроме главной загружаются динамически (lazy loading) с помощью `React.lazy()` и `Suspense`:
+
+```typescript
+// Пример из App.tsx
+const DeliveryPaymentPage = React.lazy(
+  () => import("./components/DeliveryPaymentPage")
+);
+
+// Использование
+<Route
+  path="/delivery"
+  element={
+    <Suspense fallback={<LoadingSpinner />}>
+      <DeliveryPaymentPage />
+    </Suspense>
+  }
+/>
+```
+
+**Преимущества:**
+- Уменьшение размера начального бандла
+- Быстрая загрузка главной страницы
+- Загрузка страниц по требованию
+
+### 7.5 Навигация в компонентах
+
+#### Header.tsx и Footer.tsx
+Все ссылки используют компонент `Link` из react-router-dom:
+
+```typescript
+import { Link } from 'react-router-dom';
+
+<Link to="/delivery">Доставка и оплата</Link>
+<Link to="/reviews">Отзывы</Link>
+```
+
+#### Certificate Cards
+Карточки сертификатов поддерживают навигацию через prop `to`:
+
+```typescript
+<GlampingCard
+  {...certificateData}
+  to="/certificates/pet-friendly"
+/>
+```
+
+### 7.6 Интеграция с OpenCart
+
+При интеграции в OpenCart убедитесь что:
+
+1. **Все статические ресурсы доступны:**
+   - JS бандлы из `dist/assets/*.js`
+   - CSS файлы из `dist/assets/*.css`
+   - Изображения из `dist/assets/*.png`, `*.jpg`, `*.webp`
+
+2. **Apache/Nginx настроен для SPA:**
+   - `.htaccess` работает (Apache `mod_rewrite` включен)
+   - Или эквивалентная конфигурация для Nginx
+
+3. **Базовый URL настроен:**
+   - В `vite.config.ts` указан `base: './'` для относительных путей
+   - Все импорты используют относительные пути
+
+### 7.7 Тестирование маршрутов
+
+После развертывания проверьте все маршруты:
+
+```bash
+# Главная страница
+curl -I https://your-domain.com/
+
+# Страницы
+curl -I https://your-domain.com/delivery
+curl -I https://your-domain.com/reviews
+curl -I https://your-domain.com/how-it-works
+curl -I https://your-domain.com/corporate
+curl -I https://your-domain.com/about
+curl -I https://your-domain.com/activate
+
+# Сертификаты
+curl -I https://your-domain.com/certificates/pet-friendly
+
+# 404 → должен возвращать главную страницу
+curl -I https://your-domain.com/nonexistent-page
+```
+
+Все URL должны возвращать `200 OK` и загружать `index.html`.
+
+---
+
+## 8. Тестирование
+
+### 8.1 Локальное тестирование
 
 1. **Запуск dev сервера:**
    ```bash
@@ -483,7 +637,7 @@ Content-Type: application/json
    - Заполните форму заказа
    - Проверьте отправку данных в Network tab
 
-### 7.2 Production тестирование
+### 8.2 Production тестирование
 
 1. **Build приложения:**
    ```bash
@@ -505,9 +659,9 @@ Content-Type: application/json
 
 ---
 
-## 8. Возможные проблемы и решения
+## 9. Возможные проблемы и решения
 
-### 8.1 React приложение не загружается
+### 9.1 React приложение не загружается
 
 **Проблема:** Белый экран, ошибки в консоли
 
@@ -517,7 +671,7 @@ Content-Type: application/json
 - Проверьте права доступа к файлам (chmod 644)
 - Проверьте manifest.json
 
-### 8.2 API не отвечает
+### 9.2 API не отвечает
 
 **Проблема:** Ошибка 404 при отправке формы
 
@@ -527,7 +681,7 @@ Content-Type: application/json
 - Проверьте права доступа к файлам PHP
 - Проверьте логи OpenCart: `system/storage/logs/error.log`
 
-### 8.3 CORS ошибки
+### 9.3 CORS ошибки
 
 **Проблема:** CORS policy блокирует запросы
 
@@ -536,7 +690,7 @@ Content-Type: application/json
 - Добавьте CORS заголовки в PHP контроллер если нужно
 - Проверьте настройки `.htaccess`
 
-### 8.4 Изображения не загружаются
+### 9.4 Изображения не загружаются
 
 **Проблема:** Ошибки 404 для изображений
 
@@ -547,9 +701,9 @@ Content-Type: application/json
 
 ---
 
-## 9. Оптимизация (Post-MVP)
+## 10. Оптимизация (Post-MVP)
 
-### 9.1 Изображения
+### 10.1 Изображения
 
 **Текущее состояние:** 77MB PNG файлов (40 изображений)
 
@@ -559,14 +713,14 @@ Content-Type: application/json
 - Настроить lazy loading
 - CDN для статики
 
-### 9.2 Производительность
+### 10.2 Производительность
 
 - Настроить кеширование в Nginx/Apache
 - Включить Gzip/Brotli сжатие
 - Оптимизировать code splitting (уже настроено в vite.config.ts)
 - Использовать Service Worker для PWA
 
-### 9.3 Безопасность
+### 10.3 Безопасность
 
 - Добавить CSRF токены
 - Валидация данных на сервере
@@ -576,7 +730,7 @@ Content-Type: application/json
 
 ---
 
-## 10. Контакты и поддержка
+## 11. Контакты и поддержка
 
 **Frontend разработчик:** Claude AI
 **Backend разработчик:** Тимур

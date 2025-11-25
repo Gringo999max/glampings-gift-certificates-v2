@@ -1,4 +1,5 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { Toaster } from "./components/ui/sonner";
 import { CartProvider } from "./components/CartContext";
 import { FloatingCartButton } from "./components/FloatingCartButton";
@@ -17,28 +18,22 @@ import RegionsSection from "./components/RegionsSection";
 import PromoSection from "./components/PromoSection";
 import Footer from "./components/Footer";
 
-// Lazy load page components for development routing
+// Lazy load page components
 const DeliveryPaymentPage = React.lazy(
-  () => import("./components/DeliveryPaymentPage"),
+  () => import("./components/DeliveryPaymentPage")
 );
 const CorporateB2BPage = React.lazy(
-  () => import("./components/CorporateB2BPage"),
+  () => import("./components/CorporateB2BPage")
 );
-const ReviewsPage = React.lazy(
-  () => import("./components/ReviewsPage"),
-);
-const AboutPage = React.lazy(
-  () => import("./components/AboutPage"),
-);
+const ReviewsPage = React.lazy(() => import("./components/ReviewsPage"));
+const AboutPage = React.lazy(() => import("./components/AboutPage"));
 const CertificateActivationPage = React.lazy(
-  () => import("./components/CertificateActivationPage"),
+  () => import("./components/CertificateActivationPage")
 );
 const PetFriendlyGlampingPage = React.lazy(
-  () => import("./components/PetFriendlyGlampingPage"),
+  () => import("./components/PetFriendlyGlampingPage")
 );
-const HowItWorksPage = React.lazy(
-  () => import("./components/HowItWorksPage"),
-);
+const HowItWorksPage = React.lazy(() => import("./components/HowItWorksPage"));
 
 // Loading spinner for lazy loaded pages
 const LoadingSpinner = () => (
@@ -89,97 +84,154 @@ function HomePage() {
   );
 }
 
-// Development-only routing wrapper
-function DevRouter({ children }: { children: React.ReactNode }) {
-  // Only use React Router in development mode
-  if (import.meta.env.DEV) {
-    const { BrowserRouter, Routes, Route, Navigate } = require('react-router-dom');
+// Router component that handles initialRoute navigation
+function AppRouter({ initialRoute }: { initialRoute: string }) {
+  const navigate = useNavigate();
 
-    return (
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={children} />
+  // Navigate to initial route on mount (from OpenCart data-route)
+  useEffect(() => {
+    if (initialRoute && initialRoute !== "/" && initialRoute !== window.location.pathname) {
+      navigate(initialRoute, { replace: true });
+    }
+  }, [initialRoute, navigate]);
 
-          <Route
-            path="/delivery"
-            element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <DeliveryPaymentPage />
-              </Suspense>
-            }
-          />
+  return (
+    <Routes>
+      {/* Main Page */}
+      <Route path="/" element={<HomePage />} />
 
-          <Route
-            path="/reviews"
-            element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <ReviewsPage />
-              </Suspense>
-            }
-          />
+      {/* Certificate Types */}
+      <Route
+        path="/pet-friendly"
+        element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <PetFriendlyGlampingPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/romantic"
+        element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <div className="min-h-screen flex items-center justify-center">
+              <p>Romantic Glamping Page (Coming Soon)</p>
+            </div>
+          </Suspense>
+        }
+      />
+      <Route
+        path="/family"
+        element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <div className="min-h-screen flex items-center justify-center">
+              <p>Family Glamping Page (Coming Soon)</p>
+            </div>
+          </Suspense>
+        }
+      />
+      <Route
+        path="/extreme"
+        element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <div className="min-h-screen flex items-center justify-center">
+              <p>Extreme Glamping Page (Coming Soon)</p>
+            </div>
+          </Suspense>
+        }
+      />
+      <Route
+        path="/relax"
+        element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <div className="min-h-screen flex items-center justify-center">
+              <p>Relax Glamping Page (Coming Soon)</p>
+            </div>
+          </Suspense>
+        }
+      />
+      <Route
+        path="/nominal"
+        element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <div className="min-h-screen flex items-center justify-center">
+              <p>Nominal Certificate Page (Coming Soon)</p>
+            </div>
+          </Suspense>
+        }
+      />
 
-          <Route
-            path="/how-it-works"
-            element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <HowItWorksPage />
-              </Suspense>
-            }
-          />
+      {/* Main Pages */}
+      <Route
+        path="/delivery"
+        element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <DeliveryPaymentPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/reviews"
+        element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <ReviewsPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/how-it-works"
+        element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <HowItWorksPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/corporate"
+        element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <CorporateB2BPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/about"
+        element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <AboutPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/contacts"
+        element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <div className="min-h-screen flex items-center justify-center">
+              <p>Contacts Page (Coming Soon)</p>
+            </div>
+          </Suspense>
+        }
+      />
+      <Route
+        path="/activate"
+        element={
+          <Suspense fallback={<LoadingSpinner />}>
+            <CertificateActivationPage />
+          </Suspense>
+        }
+      />
 
-          <Route
-            path="/corporate"
-            element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <CorporateB2BPage />
-              </Suspense>
-            }
-          />
-
-          <Route
-            path="/about"
-            element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <AboutPage />
-              </Suspense>
-            }
-          />
-
-          <Route
-            path="/activate"
-            element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <CertificateActivationPage />
-              </Suspense>
-            }
-          />
-
-          <Route
-            path="/certificates/pet-friendly"
-            element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <PetFriendlyGlampingPage />
-              </Suspense>
-            }
-          />
-
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
-    );
-  }
-
-  // In production (OpenCart), just render children without routing
-  return <>{children}</>;
+      {/* 404 - Redirect to home */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
 }
 
-export default function App() {
+// Main App Component
+export default function App({ initialRoute = "/" }: { initialRoute?: string }) {
   return (
     <ErrorBoundary fallback={ErrorFallback}>
       <CartProvider>
-        <DevRouter>
-          <HomePage />
-        </DevRouter>
+        <AppRouter initialRoute={initialRoute} />
         <FloatingCartButton />
         <Toaster />
       </CartProvider>

@@ -33,11 +33,14 @@ export default defineConfig({
       'figma:asset/79a80dd324991daf45cd90a9f2912d78d0a8ec45.png': path.resolve(__dirname, './src/assets/79a80dd324991daf45cd90a9f2912d78d0a8ec45.png'),
       'figma:asset/7810d8a7d4bf118cf4d79c50b97bd42ca54af713.png': path.resolve(__dirname, './src/assets/7810d8a7d4bf118cf4d79c50b97bd42ca54af713.png'),
       'figma:asset/70349575acaa59c345f1c559014a5cf37cb565aa.png': path.resolve(__dirname, './src/assets/70349575acaa59c345f1c559014a5cf37cb565aa.png'),
+      'figma:asset/91c370a99c7e6e4aa88dbd1d52bbb76ad43c4d82.png': path.resolve(__dirname, './src/assets/91c370a99c7e6e4aa88dbd1d52bbb76ad43c4d82.png'),
+      'figma:asset/5c6c59f6aa8c5c01b8c2663f5fdf7353fc82e4e1.png': path.resolve(__dirname, './src/assets/5c6c59f6aa8c5c01b8c2663f5fdf7353fc82e4e1.png'),
       'figma:asset/5a68e50dcca847af7365add8cb07b18810f77a5e.png': path.resolve(__dirname, './src/assets/5a68e50dcca847af7365add8cb07b18810f77a5e.png'),
       'figma:asset/59d0cd518141401a74312451a994de3362fa4335.png': path.resolve(__dirname, './src/assets/59d0cd518141401a74312451a994de3362fa4335.png'),
       'figma:asset/586894e1eb9ab400cb190afffd6aede6c08cfdcd.png': path.resolve(__dirname, './src/assets/586894e1eb9ab400cb190afffd6aede6c08cfdcd.png'),
       'figma:asset/57ea8bdd40eda2a30d273d0efc117ab1b9064f5e.png': path.resolve(__dirname, './src/assets/57ea8bdd40eda2a30d273d0efc117ab1b9064f5e.png'),
       'figma:asset/4ecdb0f39700ddb61bd3ccb8acf64bca3bd0b0d8.png': path.resolve(__dirname, './src/assets/4ecdb0f39700ddb61bd3ccb8acf64bca3bd0b0d8.png'),
+      'figma:asset/4dfccd32ae5af0dcede65e0fcd60b91d87c1af55.png': path.resolve(__dirname, './src/assets/4dfccd32ae5af0dcede65e0fcd60b91d87c1af55.png'),
       'figma:asset/4c8b6db05c932cfffc985522af051f14decfbd9b.png': path.resolve(__dirname, './src/assets/4c8b6db05c932cfffc985522af051f14decfbd9b.png'),
       'figma:asset/4aea96e41c4e52607c9611a364a6da071e0abac4.png': path.resolve(__dirname, './src/assets/4aea96e41c4e52607c9611a364a6da071e0abac4.png'),
       'figma:asset/473c627910d9537f1ff6b8d1db2964f79ea88c39.png': path.resolve(__dirname, './src/assets/473c627910d9537f1ff6b8d1db2964f79ea88c39.png'),
@@ -54,10 +57,12 @@ export default defineConfig({
     },
   },
   build: {
+    manifest: true, // Generate manifest.json for OpenCart integration
     target: 'esnext',
     outDir: 'dist', // Изменено с 'build' на 'dist'
     assetsDir: 'assets',
     rollupOptions: {
+      external: (id) => id.startsWith('figma:asset/'),
       output: {
         // Code splitting для оптимизации
         manualChunks: {

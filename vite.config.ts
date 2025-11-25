@@ -54,6 +54,7 @@ export default defineConfig({
     },
   },
   build: {
+    manifest: true, // Генерировать manifest.json для OpenCart
     target: 'esnext',
     outDir: 'dist', // Изменено с 'build' на 'dist'
     assetsDir: 'assets',

@@ -84,11 +84,59 @@ catalog/view/theme/default/image/gift/
 
 ### Шаг 4: Скопировать JavaScript (только для главной)
 
+**ВАЖНО:** Сначала нужно собрать React проект:
+
 ```bash
-# После npm run build в frontend проекте
-cp -r dist/assets/* → catalog/view/javascript/gift-app/
-cp dist/manifest.json → catalog/view/javascript/gift-app/
+cd /path/to/glampings-gift-certificates-v2
+npm install
+npm run build
 ```
+
+Это создаст папку `dist/` с файлами:
+```
+dist/
+├── manifest.json              # ⭐ ОБЯЗАТЕЛЬНО! Карта файлов с хешами
+└── assets/
+    ├── gift-app-abc123.js    # Главный JS бандл
+    ├── react-vendor-xyz.js   # React библиотеки
+    ├── index-def456.css      # Стили
+    └── images/               # Изображения
+```
+
+**Копируем в OpenCart:**
+
+```bash
+# Создать папку для React бандла
+mkdir -p catalog/view/javascript/gift-app/
+
+# Скопировать всё содержимое dist/
+cp -r dist/assets/* catalog/view/javascript/gift-app/assets/
+cp dist/manifest.json catalog/view/javascript/gift-app/
+```
+
+**📋 Что такое manifest.json?**
+
+Это файл, который содержит маппинг файлов с хешами. Vite генерирует его автоматически при сборке:
+
+```json
+{
+  "index.html": {
+    "file": "assets/gift-app-abc123.js",
+    "css": [
+      "assets/index-def456.css"
+    ],
+    "isEntry": true
+  }
+}
+```
+
+Шаблон `gift.tpl` читает этот файл, чтобы подключить правильные JS/CSS файлы с хешами.
+
+**❌ Если manifest.json не создался:**
+
+1. Проверьте, что в `vite.config.ts` есть `manifest: true`
+2. Удалите папку `dist/` и соберите заново: `rm -rf dist && npm run build`
+3. Проверьте логи сборки на ошибки
 
 ### Шаг 5: Создать контроллер
 

@@ -1,5 +1,4 @@
 import { Mountain, Users, Building2, Info, Mail, MapPin, FileText, Phone } from 'lucide-react'
-import { Link } from 'react-router-dom'
 
 interface FooterVariantsProps {
   variant?: 'v1' | 'v2' | 'v3' | 'v4' | 'v5'
@@ -607,21 +606,15 @@ export function FooterVariants({
                       else if (link === 'Подарочный сертификат') linkPath = '/'
                       else if (link === 'Контакты') linkPath = '/contacts'
 
-                      // Если есть конкретный путь, используем Link, иначе обычный <a>
-                      const LinkComponent = linkPath !== "#" ? Link : "a"
-                      const linkProps = linkPath !== "#"
-                        ? { to: linkPath }
-                        : { href: "#" }
-
                       return (
                         <li key={index}>
-                          <LinkComponent
-                            {...linkProps}
+                          <a
+                            href={linkPath}
                             className="text-sm text-gray-600 hover:text-emerald-600 transition-colors flex items-center gap-2 group"
                           >
                             <span className="w-0 group-hover:w-3 h-0.5 bg-emerald-500 transition-all"></span>
                             {link}
-                          </LinkComponent>
+                          </a>
                         </li>
                       )
                     })}
@@ -680,9 +673,9 @@ export function FooterVariants({
                 © {footerData.company.yearRange} {footerData.company.name}. {footerData.company.copyright}
               </p>
               <div className="flex flex-wrap gap-6 text-sm text-gray-400">
-                <Link to="/contacts" className="hover:text-emerald-400 transition-colors">Контакты</Link>
+                <a href="/contacts" className="hover:text-emerald-400 transition-colors">Контакты</a>
                 <a href="#" className="hover:text-emerald-400 transition-colors">Поддержка</a>
-                <Link to="/how-it-works" className="hover:text-emerald-400 transition-colors">FAQ</Link>
+                <a href="/how-it-works" className="hover:text-emerald-400 transition-colors">FAQ</a>
                 <a href="#" className="hover:text-emerald-400 transition-colors">Карта сайта</a>
               </div>
             </div>

@@ -1,6 +1,5 @@
 import { ImageWithFallback } from './figma/ImageWithFallback'
 import { ArrowRight } from 'lucide-react'
-import { Link } from 'react-router-dom'
 
 interface GlampingCardProps {
   title: string
@@ -67,12 +66,12 @@ export function GlampingCard({
     </>
   )
 
-  // If 'to' prop is provided, wrap with Link, otherwise use div with onClick
+  // If 'to' prop is provided, wrap with a tag, otherwise use div with onClick
   if (to) {
     return (
-      <Link to={to} className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
+      <a href={to} className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
         {content}
-      </Link>
+      </a>
     )
   }
 

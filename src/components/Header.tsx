@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import { Button } from './ui/button'
 import { SegmentsModal } from './SegmentsModal'
 import { CertificatesPopover } from './CertificatesPopover'
@@ -27,12 +26,12 @@ export function Header() {
         <div className="flex items-center justify-between min-h-[42px]">
 
           {/* Логотип */}
-          <Link to="/" className="flex-shrink-0 ml-4">
+          <a href="/" className="flex-shrink-0 ml-4">
             <div
               className="bg-center bg-cover bg-no-repeat h-[42px] w-36"
               style={{ backgroundImage: `url('${imgLogoGreenWithBackground1}')` }}
             />
-          </Link>
+          </a>
 
           {/* Навигация для больших экранов */}
           <nav className="hidden xl:flex items-center gap-6 flex-1 justify-center">
@@ -41,12 +40,12 @@ export function Header() {
               onMouseEnter={() => setShowCertificatesPopover(true)}
               onMouseLeave={() => setShowCertificatesPopover(false)}
             >
-              <Link
+              <a
                 to="/"
                 className="text-sm text-[#007a55] hover:text-emerald-600 transition-colors font-medium tracking-tight whitespace-nowrap"
               >
                 Подарочные сертификаты
-              </Link>
+              </a>
               <CertificatesPopover
                 isVisible={showCertificatesPopover}
                 onClose={() => setShowCertificatesPopover(false)}
@@ -58,12 +57,12 @@ export function Header() {
               onMouseEnter={() => setShowDeliveryPopover(true)}
               onMouseLeave={() => setShowDeliveryPopover(false)}
             >
-              <Link
+              <a
                 to="/delivery"
                 className="text-sm text-[#007a55] hover:text-emerald-600 transition-colors font-medium tracking-tight whitespace-nowrap"
               >
                 Доставка и оплата
-              </Link>
+              </a>
               <DeliveryPopover
                 isVisible={showDeliveryPopover}
                 onClose={() => setShowDeliveryPopover(false)}
@@ -75,12 +74,12 @@ export function Header() {
               onMouseEnter={() => setShowReviewsPopover(true)}
               onMouseLeave={() => setShowReviewsPopover(false)}
             >
-              <Link
+              <a
                 to="/reviews"
                 className="text-sm text-[#007a55] hover:text-emerald-600 transition-colors font-medium tracking-tight whitespace-nowrap"
               >
                 Отзывы
-              </Link>
+              </a>
               <ReviewsPopover
                 isVisible={showReviewsPopover}
                 onClose={() => setShowReviewsPopover(false)}
@@ -92,12 +91,12 @@ export function Header() {
               onMouseEnter={() => setShowHowItWorksPopover(true)}
               onMouseLeave={() => setShowHowItWorksPopover(false)}
             >
-              <Link
+              <a
                 to="/how-it-works"
                 className="text-sm text-[#007a55] hover:text-emerald-600 transition-colors font-medium tracking-tight whitespace-nowrap"
               >
                 Как это работает
-              </Link>
+              </a>
               <HowItWorksPopover
                 isVisible={showHowItWorksPopover}
                 onClose={() => setShowHowItWorksPopover(false)}
@@ -109,12 +108,12 @@ export function Header() {
               onMouseEnter={() => setShowCorporatePopover(true)}
               onMouseLeave={() => setShowCorporatePopover(false)}
             >
-              <Link
+              <a
                 to="/corporate"
                 className="text-sm text-[#007a55] hover:text-emerald-600 transition-colors font-medium tracking-tight whitespace-nowrap"
               >
                 Корпоративные подарки
-              </Link>
+              </a>
               <CorporatePopover
                 isVisible={showCorporatePopover}
                 onClose={() => setShowCorporatePopover(false)}
@@ -126,34 +125,34 @@ export function Header() {
               onMouseEnter={() => setShowAboutPopover(true)}
               onMouseLeave={() => setShowAboutPopover(false)}
             >
-              <Link
+              <a
                 to="/about"
                 className="text-sm text-[#007a55] hover:text-emerald-600 transition-colors font-medium tracking-tight whitespace-nowrap"
               >
                 О Нас
-              </Link>
+              </a>
               <AboutPopover
                 isVisible={showAboutPopover}
                 onClose={() => setShowAboutPopover(false)}
               />
             </div>
             
-            <Link
+            <a
               to="/contacts"
               className="text-sm text-[#007a55] hover:text-emerald-600 transition-colors font-medium tracking-tight whitespace-nowrap"
             >
               Контакты
-            </Link>
+            </a>
           </nav>
 
           {/* Кнопки справа для больших экранов */}
           <div className="hidden lg:flex items-center gap-2">
-            <Link
+            <a
               to="/activate"
               className="bg-white border border-[#a1f5da] rounded-sm h-[28px] px-3 flex items-center justify-center text-sm text-[#007a55] font-medium tracking-tight hover:bg-emerald-50 hover:border-emerald-300 transition-all duration-200 whitespace-nowrap"
             >
               Активировать сертификат
-            </Link>
+            </a>
 
             <div className="flex items-center justify-center w-6 h-6 mx-1">
               <div className="w-6 h-px rotate-90 opacity-30">
@@ -161,12 +160,12 @@ export function Header() {
               </div>
             </div>
 
-            <Link
+            <a
               to="/"
               className="bg-[#1b916b] border border-[#1b916b] rounded-sm h-[28px] px-3 flex items-center justify-center text-sm text-white font-medium tracking-tight hover:bg-emerald-700 transition-all duration-200 whitespace-nowrap shadow-sm hover:shadow-md"
             >
               Выбрать объект
-            </Link>
+            </a>
           </div>
 
           {/* Мобильное меню - кнопка */}
@@ -217,21 +216,21 @@ export function Header() {
                 )}
               </div>
 
-              <Link
+              <a
                 to="/reviews"
                 className="text-sm text-[#007a55] hover:text-emerald-600 transition-colors font-medium tracking-tight block py-2"
                 onClick={() => setShowMobileMenu(false)}
               >
                 Отзывы
-              </Link>
+              </a>
 
-              <Link
+              <a
                 to="/how-it-works"
                 className="text-sm text-[#007a55] hover:text-emerald-600 transition-colors font-medium tracking-tight block py-2"
                 onClick={() => setShowMobileMenu(false)}
               >
                 Как это работает
-              </Link>
+              </a>
 
               <div>
                 <button
@@ -250,38 +249,38 @@ export function Header() {
                 )}
               </div>
 
-              <Link
+              <a
                 to="/about"
                 className="text-sm text-[#007a55] hover:text-emerald-600 transition-colors font-medium tracking-tight block py-2"
                 onClick={() => setShowMobileMenu(false)}
               >
                 О Нас
-              </Link>
+              </a>
 
-              <Link
+              <a
                 to="/contacts"
                 className="text-sm text-[#007a55] hover:text-emerald-600 transition-colors font-medium tracking-tight block py-2"
                 onClick={() => setShowMobileMenu(false)}
               >
                 Контакты
-              </Link>
+              </a>
 
               <div className="flex flex-col gap-3 pt-4 border-t border-emerald-100">
-                <Link
+                <a
                   to="/activate"
                   className="bg-white border border-[#a1f5da] rounded-sm h-[36px] px-4 flex items-center justify-center text-sm text-[#007a55] font-medium tracking-tight hover:bg-emerald-50 transition-colors"
                   onClick={() => setShowMobileMenu(false)}
                 >
                   Активировать сертификат
-                </Link>
+                </a>
 
-                <Link
+                <a
                   to="/"
                   className="bg-[#1b916b] border border-[#1b916b] rounded-sm h-[36px] px-4 flex items-center justify-center text-sm text-white font-medium tracking-tight hover:bg-emerald-700 transition-colors shadow-sm"
                   onClick={() => setShowMobileMenu(false)}
                 >
                   Выбрать объект
-                </Link>
+                </a>
               </div>
             </nav>
           </div>

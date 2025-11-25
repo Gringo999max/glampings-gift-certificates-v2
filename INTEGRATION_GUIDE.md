@@ -4,10 +4,27 @@
 
 Это руководство описывает процесс интеграции React SPA приложения для продажи подарочных сертификатов в OpenCart 2.3.
 
-**Версия:** v2.0 MVP
-**Дата:** 2025-11-24
+**Версия:** v3.0 Multi-Template
+**Дата:** 2025-11-25
 **Frontend разработчик:** Claude AI
 **Backend разработчик:** Тимур
+
+---
+
+## ⚠️ КРИТИЧЕСКОЕ ИЗМЕНЕНИЕ АРХИТЕКТУРЫ (v3.0)
+
+**Дата изменения:** 2025-11-25
+
+После обсуждения с backend разработчиком (Тимур) выяснилось, что **React SPA с клиентским роутингом НЕ подходит** для OpenCart 2.3.
+
+**Новая архитектура:**
+- ✅ **Главная страница** - React SPA (с корзиной и формой заказа)
+- ✅ **Все остальные страницы** - статичные HTML .tpl шаблоны
+- ✅ **14 отдельных .tpl файлов** для OpenCart
+- ✅ **Локальные изображения** (не figma:asset/)
+- ✅ **Shared header/footer** для всех страниц
+
+**Подробная инструкция по интеграции:** См. `opencart-templates/README_FOR_TIMUR.md`
 
 ---
 
@@ -15,7 +32,7 @@
 
 ```
 glampings-gift-certificates-v2/
-├── src/                          # Исходный код React приложения
+├── src/                          # Исходный код React приложения (только главная страница)
 │   ├── components/               # React компоненты
 │   ├── utils/                    # Утилиты (включая checkoutService.ts)
 │   └── assets/                   # Изображения (77MB PNG)
@@ -27,7 +44,35 @@ glampings-gift-certificates-v2/
 │   │   ├── ui-radix-[hash].js  # UI компоненты
 │   │   └── [name]-[hash].css   # Стили
 │   └── manifest.json            # Манифест со списком файлов
-├── gift.tpl                     # OpenCart шаблон
+├── opencart-templates/          # ⭐ OpenCart шаблоны (v3.0)
+│   ├── shared/                  # Общие компоненты
+│   │   ├── header.tpl          # Хедер для всех страниц
+│   │   └── footer.tpl          # Футер для всех страниц
+│   ├── css/                     # CSS файлы
+│   │   ├── gift_common.css     # Общие стили
+│   │   ├── gift_delivery.css   # Стили доставки
+│   │   └── gift_certificate_type.css  # Стили типов сертификатов
+│   ├── images/                  # Локальные изображения
+│   │   ├── hero/               # Hero изображения
+│   │   ├── certificates/       # Изображения сертификатов
+│   │   ├── designs/            # Дизайны
+│   │   └── icons/              # Иконки
+│   ├── gift.tpl                 # Главная (React SPA)
+│   ├── gift_delivery.tpl        # Доставка и оплата
+│   ├── gift_pet_friendly.tpl    # Pet-Friendly сертификат
+│   ├── gift_reviews.tpl         # Отзывы (TODO)
+│   ├── gift_how_it_works.tpl    # Как это работает (TODO)
+│   ├── gift_corporate.tpl       # Корпоративные (TODO)
+│   ├── gift_about.tpl           # О нас (TODO)
+│   ├── gift_contacts.tpl        # Контакты (TODO)
+│   ├── gift_activate.tpl        # Активация (TODO)
+│   ├── gift_romantic.tpl        # Романтический (TODO)
+│   ├── gift_family.tpl          # Семейный (TODO)
+│   ├── gift_extreme.tpl         # Экстрим (TODO)
+│   ├── gift_relax.tpl           # Релакс (TODO)
+│   ├── gift_nominal.tpl         # По номиналу (TODO)
+│   └── README_FOR_TIMUR.md      # Инструкция по интеграции
+├── INTEGRATION_NOTE.md          # Объяснение изменений архитектуры
 ├── package.json                 # NPM зависимости
 ├── vite.config.ts              # Конфигурация сборки
 └── tsconfig.json               # TypeScript конфигурация
@@ -467,157 +512,225 @@ Content-Type: application/json
 
 ---
 
-## 7. React Router и структура URL
+## 7. Multi-Template архитектура (v3.0)
 
-### 7.1 Обзор
+### 7.1 Обзор архитектуры
 
-Приложение использует React Router v6 для client-side навигации. Это позволяет:
-- Навигация без перезагрузки страницы
-- Прямой доступ к любой странице по URL
-- Browser history support (кнопки Назад/Вперед)
-- SEO-friendly URLs
+**⚠️ React Router УДАЛЕН** в версии v3.0.
 
-### 7.2 Структура маршрутов
+**Причина:** OpenCart 2.3 несовместим с client-side routing. Каждая страница должна быть отдельным PHP шаблоном (.tpl файл), управляемым через OpenCart контроллер.
 
-#### Главные страницы
+**Новая структура:**
+- 1 React SPA страница (главная с корзиной)
+- 13 статичных HTML страниц (.tpl шаблоны)
+- Shared header/footer для всех страниц
+- Server-side навигация через OpenCart URLs
+
+### 7.2 Список всех страниц
+
+#### 1. Главная страница (React SPA)
+- **Template:** `opencart-templates/gift.tpl`
+- **URL:** `/index.php?route=information/gift`
+- **SEO URL:** `/gift-certificate`
+- **Технология:** React SPA с корзиной и checkout формой
+
+#### 2-8. Основные информационные страницы (Static HTML)
+| # | Template | URL | SEO URL |
+|---|----------|-----|---------|
+| 2 | gift_delivery.tpl | information/gift/delivery | /gift-certificate/delivery |
+| 3 | gift_reviews.tpl | information/gift/reviews | /gift-certificate/reviews |
+| 4 | gift_how_it_works.tpl | information/gift/howItWorks | /gift-certificate/how-it-works |
+| 5 | gift_corporate.tpl | information/gift/corporate | /gift-certificate/corporate |
+| 6 | gift_about.tpl | information/gift/about | /gift-certificate/about |
+| 7 | gift_contacts.tpl | information/gift/contacts | /gift-certificate/contacts |
+| 8 | gift_activate.tpl | information/gift/activate | /gift-certificate/activate |
+
+#### 9-14. Страницы типов сертификатов (Static HTML)
+| # | Template | URL | SEO URL |
+|---|----------|-----|---------|
+| 9 | gift_pet_friendly.tpl | information/gift/petFriendly | /gift-certificate/pet-friendly |
+| 10 | gift_romantic.tpl | information/gift/romantic | /gift-certificate/romantic |
+| 11 | gift_family.tpl | information/gift/family | /gift-certificate/family |
+| 12 | gift_extreme.tpl | information/gift/extreme | /gift-certificate/extreme |
+| 13 | gift_relax.tpl | information/gift/relax | /gift-certificate/relax |
+| 14 | gift_nominal.tpl | information/gift/nominal | /gift-certificate/nominal |
+
+### 7.3 Структура .tpl шаблонов
+
+#### Главная страница (gift.tpl)
+```php
+<?php echo $header; ?>
+<link rel="stylesheet" href="<?php echo $base; ?>catalog/view/theme/default/stylesheet/gift_common.css">
+
+<!-- React App Container -->
+<div id="root"></div>
+
+<!-- React Bundle (from npm run build) -->
+<?php
+$manifest_path = DIR_APPLICATION . '../catalog/view/javascript/gift-app/manifest.json';
+if (file_exists($manifest_path)) {
+    $manifest = json_decode(file_get_contents($manifest_path), true);
+    // Load CSS and JS from manifest
+}
+?>
+
+<?php echo $footer; ?>
 ```
-/ → Главная страница (с секциями сертификатов)
-/delivery → Доставка и оплата
-/reviews → Отзывы клиентов
-/how-it-works → Как это работает
-/corporate → Корпоративные подарки (B2B)
-/about → О нас
-/contacts → Контакты
-/activate → Активация сертификата
+
+#### Статичные страницы (gift_delivery.tpl, gift_pet_friendly.tpl и т.д.)
+```php
+<?php echo $header; ?>
+<link rel="stylesheet" href="<?php echo $base; ?>catalog/view/theme/default/stylesheet/gift_common.css">
+<link rel="stylesheet" href="<?php echo $base; ?>catalog/view/theme/default/stylesheet/gift_delivery.css">
+
+<?php
+$current_page = 'delivery';
+include(DIR_TEMPLATE . 'information/shared/header.tpl');
+?>
+
+<main class="delivery-page">
+  <div class="container">
+    <!-- Статичный HTML контент -->
+  </div>
+</main>
+
+<?php include(DIR_TEMPLATE . 'information/shared/footer.tpl'); ?>
+<?php echo $footer; ?>
 ```
 
-#### Страницы типов сертификатов
+### 7.4 Shared компоненты
+
+#### header.tpl (shared/header.tpl)
+Содержит:
+- Логотип и навигационное меню
+- Активная страница highlight через `$current_page`
+- Mobile menu toggle
+- Кнопка "Активировать сертификат"
+
+#### footer.tpl (shared/footer.tpl)
+Содержит:
+- 4-колоночный layout с ссылками
+- Социальные сети
+- Copyright и disclaimer
+
+### 7.5 CSS файлы
+
+| Файл | Описание | Используется в |
+|------|----------|----------------|
+| gift_common.css | Base стили для всех страниц | Все страницы |
+| gift_delivery.css | Стили доставки и оплаты | gift_delivery.tpl |
+| gift_certificate_type.css | Стили типов сертификатов | gift_pet_friendly.tpl и др. типы |
+
+### 7.6 OpenCart контроллер
+
+**Файл:** `catalog/controller/information/gift.php`
+
+```php
+<?php
+class ControllerInformationGift extends Controller {
+
+    private function loadGiftPage($template, $page_name) {
+        $this->load->language('information/gift');
+        $data['heading_title'] = 'Подарочные сертификаты ГЛЭМПИНГИ.РФ';
+        $data['base'] = $this->config->get('config_url');
+        $data['home_url'] = $this->url->link('common/home');
+        $data['current_page'] = $page_name;
+
+        $data['breadcrumbs'] = array();
+        $data['breadcrumbs'][] = array(
+            'text' => 'Главная',
+            'href' => $this->url->link('common/home')
+        );
+        $data['breadcrumbs'][] = array(
+            'text' => 'Подарочные сертификаты',
+            'href' => $this->url->link('information/gift')
+        );
+
+        $data['column_left'] = $this->load->controller('common/column_left');
+        $data['column_right'] = $this->load->controller('common/column_right');
+        $data['content_top'] = $this->load->controller('common/content_top');
+        $data['content_bottom'] = $this->load->controller('common/content_bottom');
+        $data['footer'] = $this->load->controller('common/footer');
+        $data['header'] = $this->load->controller('common/header');
+
+        $this->response->setOutput($this->load->view($template, $data));
+    }
+
+    // Главная (React SPA)
+    public function index() {
+        $this->loadGiftPage('information/gift', 'home');
+    }
+
+    // Основные страницы
+    public function delivery() {
+        $this->loadGiftPage('information/gift_delivery', 'delivery');
+    }
+
+    public function reviews() {
+        $this->loadGiftPage('information/gift_reviews', 'reviews');
+    }
+
+    // ... 12 других методов для остальных страниц
+}
+?>
 ```
-/certificates/pet-friendly → Отдых с питомцами
-/certificates/romantic → Романтические сертификаты (TODO)
-/certificates/family → Семейный отдых (TODO)
-/certificates/extreme → Экстремальный отдых (TODO)
-/certificates/relax → Релакс и SPA (TODO)
-/certificates/nominal → Номинальные сертификаты (TODO)
+
+**Полный код контроллера:** См. `opencart-templates/README_FOR_TIMUR.md`
+
+### 7.7 SEO URL конфигурация
+
+В **Admin Panel → System → Design → SEO URL** добавить:
+
+```
+gift-certificate → information/gift
+gift-certificate/delivery → information/gift/delivery
+gift-certificate/reviews → information/gift/reviews
+gift-certificate/how-it-works → information/gift/howItWorks
+gift-certificate/corporate → information/gift/corporate
+gift-certificate/about → information/gift/about
+gift-certificate/contacts → information/gift/contacts
+gift-certificate/activate → information/gift/activate
+gift-certificate/pet-friendly → information/gift/petFriendly
+gift-certificate/romantic → information/gift/romantic
+gift-certificate/family → information/gift/family
+gift-certificate/extreme → information/gift/extreme
+gift-certificate/relax → information/gift/relax
+gift-certificate/nominal → information/gift/nominal
 ```
 
-#### 404 обработка
-```
-/* → Редирект на главную страницу (/)
-```
+### 7.8 Интеграция с OpenCart
 
-### 7.3 Конфигурация .htaccess для SPA
-
-Для правильной работы React Router в production необходим файл `.htaccess`:
-
-**Путь:** `public/.htaccess`
-
-```apache
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_FILENAME} !-l
-  RewriteRule . /index.html [L]
-</IfModule>
-```
-
-**Важно:** Этот файл должен быть скопирован в корень папки с React приложением в OpenCart:
+**Шаг 1: Скопировать Templates**
 ```bash
-cp public/.htaccess /path/to/opencart/catalog/view/theme/default/dist/.htaccess
+cp opencart-templates/*.tpl → catalog/view/theme/default/template/information/
+cp -r opencart-templates/shared/ → catalog/view/theme/default/template/information/shared/
 ```
 
-### 7.4 Lazy Loading страниц
-
-Все страницы кроме главной загружаются динамически (lazy loading) с помощью `React.lazy()` и `Suspense`:
-
-```typescript
-// Пример из App.tsx
-const DeliveryPaymentPage = React.lazy(
-  () => import("./components/DeliveryPaymentPage")
-);
-
-// Использование
-<Route
-  path="/delivery"
-  element={
-    <Suspense fallback={<LoadingSpinner />}>
-      <DeliveryPaymentPage />
-    </Suspense>
-  }
-/>
-```
-
-**Преимущества:**
-- Уменьшение размера начального бандла
-- Быстрая загрузка главной страницы
-- Загрузка страниц по требованию
-
-### 7.5 Навигация в компонентах
-
-#### Header.tsx и Footer.tsx
-Все ссылки используют компонент `Link` из react-router-dom:
-
-```typescript
-import { Link } from 'react-router-dom';
-
-<Link to="/delivery">Доставка и оплата</Link>
-<Link to="/reviews">Отзывы</Link>
-```
-
-#### Certificate Cards
-Карточки сертификатов поддерживают навигацию через prop `to`:
-
-```typescript
-<GlampingCard
-  {...certificateData}
-  to="/certificates/pet-friendly"
-/>
-```
-
-### 7.6 Интеграция с OpenCart
-
-При интеграции в OpenCart убедитесь что:
-
-1. **Все статические ресурсы доступны:**
-   - JS бандлы из `dist/assets/*.js`
-   - CSS файлы из `dist/assets/*.css`
-   - Изображения из `dist/assets/*.png`, `*.jpg`, `*.webp`
-
-2. **Apache/Nginx настроен для SPA:**
-   - `.htaccess` работает (Apache `mod_rewrite` включен)
-   - Или эквивалентная конфигурация для Nginx
-
-3. **Базовый URL настроен:**
-   - В `vite.config.ts` указан `base: './'` для относительных путей
-   - Все импорты используют относительные пути
-
-### 7.7 Тестирование маршрутов
-
-После развертывания проверьте все маршруты:
-
+**Шаг 2: Скопировать CSS**
 ```bash
-# Главная страница
-curl -I https://your-domain.com/
-
-# Страницы
-curl -I https://your-domain.com/delivery
-curl -I https://your-domain.com/reviews
-curl -I https://your-domain.com/how-it-works
-curl -I https://your-domain.com/corporate
-curl -I https://your-domain.com/about
-curl -I https://your-domain.com/activate
-
-# Сертификаты
-curl -I https://your-domain.com/certificates/pet-friendly
-
-# 404 → должен возвращать главную страницу
-curl -I https://your-domain.com/nonexistent-page
+cp opencart-templates/css/* → catalog/view/theme/default/stylesheet/
 ```
 
-Все URL должны возвращать `200 OK` и загружать `index.html`.
+**Шаг 3: Скопировать изображения**
+```bash
+mkdir -p catalog/view/theme/default/image/gift/
+cp -r opencart-templates/images/* → catalog/view/theme/default/image/gift/
+```
+
+**Шаг 4: Скопировать React bundle (только для главной)**
+```bash
+# После npm run build
+cp -r dist/assets/* → catalog/view/javascript/gift-app/
+cp dist/manifest.json → catalog/view/javascript/gift-app/
+```
+
+**Шаг 5: Создать контроллер**
+```bash
+# Создать catalog/controller/information/gift.php
+# См. секцию 7.6 или README_FOR_TIMUR.md
+```
+
+**Полная инструкция:** `opencart-templates/README_FOR_TIMUR.md`
 
 ---
 
@@ -745,14 +858,41 @@ curl -I https://your-domain.com/nonexistent-page
 
 ---
 
-## Чеклист интеграции
+## Чеклист интеграции (v3.0 Multi-Template)
 
+### Frontend (OpenCart Templates)
+- [x] Создать папку opencart-templates/
+- [x] Создать shared/header.tpl и footer.tpl
+- [x] Создать gift.tpl (главная React SPA)
+- [x] Создать gift_delivery.tpl
+- [x] Создать gift_pet_friendly.tpl
+- [ ] Создать gift_reviews.tpl
+- [ ] Создать gift_how_it_works.tpl
+- [ ] Создать gift_corporate.tpl
+- [ ] Создать gift_about.tpl
+- [ ] Создать gift_contacts.tpl
+- [ ] Создать gift_activate.tpl
+- [ ] Создать gift_romantic.tpl
+- [ ] Создать gift_family.tpl
+- [ ] Создать gift_extreme.tpl
+- [ ] Создать gift_relax.tpl
+- [ ] Создать gift_nominal.tpl
+- [x] Создать CSS файлы (common, delivery, certificate_type)
+- [ ] Конвертировать все изображения в локальные файлы
+
+### Backend (OpenCart Integration)
 - [ ] Создать таблицу `gift_certificate` в БД
-- [ ] Создать контроллер `catalog/controller/gift/checkout.php`
+- [ ] Создать контроллер `catalog/controller/information/gift.php` (14 методов)
+- [ ] Создать контроллер `catalog/controller/gift/checkout.php` (API)
 - [ ] Создать модель `catalog/model/gift/certificate.php`
-- [ ] Скопировать dist/ в `catalog/view/theme/default/dist/`
-- [ ] Скопировать gift.tpl в `catalog/view/theme/default/template/gift/`
+- [ ] Скопировать все .tpl файлы в `catalog/view/theme/default/template/information/`
+- [ ] Скопировать shared/ в `catalog/view/theme/default/template/information/shared/`
+- [ ] Скопировать CSS в `catalog/view/theme/default/stylesheet/`
+- [ ] Скопировать изображения в `catalog/view/theme/default/image/gift/`
+- [ ] Скопировать React bundle в `catalog/view/javascript/gift-app/`
+- [ ] Настроить SEO URL (14 маршрутов)
 - [ ] Настроить Tinkoff Terminal Key и Password
+- [ ] Протестировать все 14 страниц
 - [ ] Протестировать создание заказа
 - [ ] Протестировать оплату через Tinkoff
 - [ ] Проверить сохранение в БД
@@ -762,6 +902,7 @@ curl -I https://your-domain.com/nonexistent-page
 
 ---
 
-**Версия документа:** 1.0
+**Версия документа:** 3.0
 **Дата создания:** 2025-11-24
-**Статус:** MVP Ready
+**Дата обновления:** 2025-11-25
+**Статус:** Multi-Template Architecture

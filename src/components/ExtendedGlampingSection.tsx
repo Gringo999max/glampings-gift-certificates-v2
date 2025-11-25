@@ -62,7 +62,7 @@ const glampings = [
   }
 ]
 
-export function ExtendedGlampingSection({ onNavigateToPetFriendly }: { onNavigateToPetFriendly?: () => void }) {
+export function ExtendedGlampingSection() {
   return (
     <section id="certificates-selection-section" className="w-full px-6 py-8 bg-white" data-section="certificates">
       <div className="max-w-7xl mx-auto">
@@ -75,14 +75,14 @@ export function ExtendedGlampingSection({ onNavigateToPetFriendly }: { onNavigat
 Выберите идеальный подарок из нашей полной коллекции. От романтических выходных до приключений с питомцами — у нас есть сертификат для каждого случая.
           </p>
         </div>
-        
+
         {/* First row - 4 cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           {glampings.slice(0, 4).map((glamping, index) => (
-            <GlampingCard 
-              key={index} 
-              {...glamping} 
-              onClick={index === 0 ? onNavigateToPetFriendly : undefined}
+            <GlampingCard
+              key={index}
+              {...glamping}
+              to={index === 0 ? '/certificates/pet-friendly' : undefined}
             />
           ))}
         </div>

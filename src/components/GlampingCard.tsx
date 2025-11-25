@@ -1,5 +1,6 @@
 import { ImageWithFallback } from './figma/ImageWithFallback'
 import { ArrowRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 interface GlampingCardProps {
   title: string
@@ -11,24 +12,23 @@ interface GlampingCardProps {
   image: string
   badge?: string
   onClick?: () => void
+  to?: string  // NEW: React Router path
 }
 
-export function GlampingCard({ 
-  title, 
+export function GlampingCard({
+  title,
   subtitle,
-  description, 
-  priceFrom, 
-  locations, 
-  features, 
+  description,
+  priceFrom,
+  locations,
+  features,
   image,
   badge,
-  onClick
+  onClick,
+  to
 }: GlampingCardProps) {
-  return (
-    <div 
-      className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
-      onClick={onClick}
-    >
+  const content = (
+    <>
       <div className="relative">
         <ImageWithFallback
           src={image}
@@ -47,12 +47,12 @@ export function GlampingCard({
           {features}
         </div>
       </div>
-      
+
       <div className="p-4 group-hover:-translate-y-2 transition-transform duration-300">
         <h3 className="font-semibold text-base mb-1 leading-relaxed tracking-tight">{title}</h3>
         <p className="text-gray-500/80 text-xs mb-2 leading-relaxed">{subtitle}</p>
         <p className="text-gray-600/75 text-xs mb-3 line-clamp-2 leading-relaxed">{description}</p>
-        
+
         <div className="flex items-end justify-between h-8">
           <div>
             <span className="text-gray-500/70 text-xs tracking-wide">от </span>
@@ -64,6 +64,24 @@ export function GlampingCard({
           </div>
         </div>
       </div>
+    </>
+  )
+
+  // If 'to' prop is provided, wrap with Link, otherwise use div with onClick
+  if (to) {
+    return (
+      <Link to={to} className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
+        {content}
+      </Link>
+    )
+  }
+
+  return (
+    <div
+      className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+      onClick={onClick}
+    >
+      {content}
     </div>
   )
 }

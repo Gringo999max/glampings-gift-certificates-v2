@@ -1,16 +1,5 @@
 import { FooterVariants } from './FooterVariants'
 
-interface FooterProps {
-  onNavigateToHome?: () => void
-  onNavigateToGiftOptions?: () => void
-  onNavigateToDelivery?: () => void
-  onNavigateToCorporate?: () => void
-  onNavigateToReviews?: () => void
-  onNavigateToAbout?: () => void
-  onNavigateToActivation?: () => void
-  onNavigateToHowItWorks?: () => void
-}
-
 /**
  * Footer component - uses variant 5 (двухуровневый с яркими акцентами)
  * Features:
@@ -21,8 +10,8 @@ interface FooterProps {
  * - Large social media buttons (Telegram + VK)
  * - Auto-updating year range (2019–current year)
  */
-export function Footer(props: FooterProps) {
-  return <FooterVariants variant="v5" {...props} />
+export function Footer() {
+  return <FooterVariants variant="v5" />
 }
 
 export default Footer

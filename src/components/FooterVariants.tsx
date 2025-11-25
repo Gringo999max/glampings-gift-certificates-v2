@@ -1,27 +1,12 @@
 import { Mountain, Users, Building2, Info, Mail, MapPin, FileText, Phone } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 interface FooterVariantsProps {
   variant?: 'v1' | 'v2' | 'v3' | 'v4' | 'v5'
-  onNavigateToHome?: () => void
-  onNavigateToGiftOptions?: () => void
-  onNavigateToDelivery?: () => void
-  onNavigateToCorporate?: () => void
-  onNavigateToReviews?: () => void
-  onNavigateToAbout?: () => void
-  onNavigateToActivation?: () => void
-  onNavigateToHowItWorks?: () => void
 }
 
-export function FooterVariants({ 
-  variant = 'v1',
-  onNavigateToHome,
-  onNavigateToGiftOptions,
-  onNavigateToDelivery,
-  onNavigateToCorporate,
-  onNavigateToReviews,
-  onNavigateToAbout,
-  onNavigateToActivation,
-  onNavigateToHowItWorks
+export function FooterVariants({
+  variant = 'v1'
 }: FooterVariantsProps) {
   // Автоматический расчет года для копирайта
   const startYear = 2019
@@ -615,25 +600,31 @@ export function FooterVariants({
                     <h4 className="font-bold text-gray-900">{footerData.guests.title}</h4>
                   </div>
                   <ul className="space-y-3">
-                    {footerData.guests.links.map((link, index) => (
-                      <li key={index}>
-                        <a 
-                          href="#" 
-                          className="text-sm text-gray-600 hover:text-emerald-600 transition-colors flex items-center gap-2 group"
-                          onClick={(e) => {
-                            e.preventDefault()
-                            if (link === 'Отзывы' && onNavigateToReviews) {
-                              onNavigateToReviews()
-                            } else if (link === 'Подарочный сертификат' && onNavigateToHome) {
-                              onNavigateToHome()
-                            }
-                          }}
-                        >
-                          <span className="w-0 group-hover:w-3 h-0.5 bg-emerald-500 transition-all"></span>
-                          {link}
-                        </a>
-                      </li>
-                    ))}
+                    {footerData.guests.links.map((link, index) => {
+                      // Определяем путь для ссылки
+                      let linkPath = "#"
+                      if (link === 'Отзывы') linkPath = '/reviews'
+                      else if (link === 'Подарочный сертификат') linkPath = '/'
+                      else if (link === 'Контакты') linkPath = '/contacts'
+
+                      // Если есть конкретный путь, используем Link, иначе обычный <a>
+                      const LinkComponent = linkPath !== "#" ? Link : "a"
+                      const linkProps = linkPath !== "#"
+                        ? { to: linkPath }
+                        : { href: "#" }
+
+                      return (
+                        <li key={index}>
+                          <LinkComponent
+                            {...linkProps}
+                            className="text-sm text-gray-600 hover:text-emerald-600 transition-colors flex items-center gap-2 group"
+                          >
+                            <span className="w-0 group-hover:w-3 h-0.5 bg-emerald-500 transition-all"></span>
+                            {link}
+                          </LinkComponent>
+                        </li>
+                      )
+                    })}
                   </ul>
                 </div>
 
@@ -689,9 +680,9 @@ export function FooterVariants({
                 © {footerData.company.yearRange} {footerData.company.name}. {footerData.company.copyright}
               </p>
               <div className="flex flex-wrap gap-6 text-sm text-gray-400">
-                <a href="#" className="hover:text-emerald-400 transition-colors">Контакты</a>
+                <Link to="/contacts" className="hover:text-emerald-400 transition-colors">Контакты</Link>
                 <a href="#" className="hover:text-emerald-400 transition-colors">Поддержка</a>
-                <a href="#" className="hover:text-emerald-400 transition-colors">FAQ</a>
+                <Link to="/how-it-works" className="hover:text-emerald-400 transition-colors">FAQ</Link>
                 <a href="#" className="hover:text-emerald-400 transition-colors">Карта сайта</a>
               </div>
             </div>

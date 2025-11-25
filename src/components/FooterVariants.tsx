@@ -1,5 +1,4 @@
 import { Mountain, Users, Building2, Info, Mail, MapPin, FileText, Phone } from 'lucide-react'
-import { Link } from 'react-router-dom'
 
 interface FooterVariantsProps {
   variant?: 'v1' | 'v2' | 'v3' | 'v4' | 'v5'
@@ -680,9 +679,9 @@ export function FooterVariants({
                 © {footerData.company.yearRange} {footerData.company.name}. {footerData.company.copyright}
               </p>
               <div className="flex flex-wrap gap-6 text-sm text-gray-400">
-                <Link to="/contacts" className="hover:text-emerald-400 transition-colors">Контакты</Link>
+                <a href="/contacts" className="hover:text-emerald-400 transition-colors">Контакты</a>
                 <a href="#" className="hover:text-emerald-400 transition-colors">Поддержка</a>
-                <Link to="/how-it-works" className="hover:text-emerald-400 transition-colors">FAQ</Link>
+                <a href="/how-it-works" className="hover:text-emerald-400 transition-colors">FAQ</a>
                 <a href="#" className="hover:text-emerald-400 transition-colors">Карта сайта</a>
               </div>
             </div>
